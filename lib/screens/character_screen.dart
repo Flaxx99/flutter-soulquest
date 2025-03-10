@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import '../services/character_service.dart';
-import '../models/character_model.dart';
+import '../supabase_config.dart';
 
 class CharacterScreen extends StatefulWidget {
   @override
@@ -8,36 +7,62 @@ class CharacterScreen extends StatefulWidget {
 }
 
 class _CharacterScreenState extends State<CharacterScreen> {
-  Stream<Character?> personajeStream =
-      CharacterService.listenToPersonajeUpdates();
+  List<Map<String, dynamic>> characters = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchCharacters();
+  }
+
+    Future<void> fetchCharacters() async {
+    try {
+      print('Fetching characters...');
+      final response = await SupabaseConfig.supabase
+          .from('characters')
+          .select();
+      
+      print('Response received: $response');
+
+      if (mounted && response != null) {  // Updated null check
+        setState(() {
+          characters = (response as List<dynamic>)
+              .map((item) => item as Map<String, dynamic>)
+              .toList();
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('Error fetching characters: $e');
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("SoulQuest - Personaje")),
-      body: StreamBuilder<Character?>(
-        stream: personajeStream,
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          final personaje = snapshot.data!;
-
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text("ID: ${personaje.id}"),
-                Text("Nombre: ${personaje.nombre}"),
-                Text("Nivel: ${personaje.nivel}"),
-                Text("Salud: ${personaje.salud}"),
-                Text("Mana: ${personaje.mana}"),
-              ],
-            ),
-          );
-        },
+      appBar: AppBar(
+        title: Text('Characters'),
       ),
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : characters.isEmpty
+              ? Center(child: Text('No characters found'))
+              : ListView.builder(
+                  itemCount: characters.length,
+                  itemBuilder: (context, index) {
+                    final character = characters[index];
+                    return ListTile(
+                      title: Text(character['name'] ?? 'No name'),
+                      // Add more fields as needed
+                    );
+                  },
+                ),
     );
   }
 }

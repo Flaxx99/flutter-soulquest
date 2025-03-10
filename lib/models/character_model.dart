@@ -13,13 +13,14 @@ class Character {
     required this.mana,
   });
 
+  // 🔹 Convertir JSON a un objeto Character
   factory Character.fromJson(Map<String, dynamic> json) {
     return Character(
-      id: json['id'] ?? 0,
-      nombre: json['nombre'] ?? 'Desconocido',
-      nivel: json['nivel'] ?? 1,
-      salud: json['salud'] ?? 100,
-      mana: json['mana'] ?? 50,
+      id: json['id'],
+      nombre: json['nombre'],
+      nivel: json['nivel'],
+      salud: json['salud'],
+      mana: json['mana'],
     );
   }
 }
