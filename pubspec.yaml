@@ -1,0 +1,29 @@
+name: soul
+description: "A new Flutter project."
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.7.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  supabase_flutter: ^2.8.4
+  flutter_dotenv: ^5.2.1
+
+  provider: ^6.0.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets: # 🔹 Sección para cargar archivos de entorno
+    - assets/.env # 🔹 Flutter ahora buscará el archivo .env en esta ruta
